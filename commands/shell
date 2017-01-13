@@ -1,0 +1,5 @@
+#!/bin/sh
+
+echo "You are now in a shell based on $(cat /etc/os-release | grep "^NAME=" | cut -f2 -d'"') $(cat /etc/os-release | grep "^VERSION=" | cut -f2 -d'"') image."
+echo "Start typing..."
+/bin/sh

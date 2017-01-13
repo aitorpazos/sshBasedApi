@@ -37,7 +37,7 @@ IgnoreRhosts yes
 # For this to work you will also need host keys in /etc/ssh_known_hosts
 RhostsRSAAuthentication no
 # similar for protocol version 2
-HostbasedAuthentication no
+HostbasedAuthentication yes
 # Uncomment if you don't trust ~/.ssh/known_hosts for RhostsRSAAuthentication
 IgnoreUserKnownHosts yes
 
@@ -89,7 +89,8 @@ Subsystem sftp /usr/lib/openssh/sftp-server
 #UsePAM yes
 
 Match User root
-  AuthenticationMethods "publickey,password"
-  AuthorizedKeysFile "%h/.ssh/authorized_keys"
-
+  PasswordAuthentication yes
+  PubkeyAuthentication yes
+  AuthorizedKeysFile "/root/.ssh/authorized_keys"
+  ForceCommand /root/commands/entry.sh
 

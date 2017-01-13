@@ -1,0 +1,32 @@
+#!/bin/bash
+
+AUTHORIZED_KEYS_BASE="/etc/ssh/keys/"
+APPLY_TO=""
+RM_KEY=""
+
+if [ $# -ne 2 ]; then
+  echo "Usage: rmKey <applyTo> <rmKey>"
+  echo "  - <applyTo>  Methods to change. Possible values: 'ALL', method name"
+  echo "  - <rmKey>   Key to remove"
+  exit 1
+fi;
+
+APPLY_TO=$1
+shift;
+
+RM_KEY=$1
+
+ALL_METHODS=$(cat /etc/passwd | egrep '[0-9]:666:' | awk -F':' '{ print $1}')
+
+# Spliting auth config to support several methods specification
+IFS=',' read -r -a APPLY_METHODS <<< "${AUTH_CONFIG}"
+
+for method in ${ALL_METHODS}; do
+  # Trimming
+  method=$(echo "${method}" | xargs)
+  if [ $(echo ${method} | tr '[:lower:]') != "root" ] && [ [ ${method} == "ALL" ] || [ ${APPLY_METHODS[${method}]} ] ]; then
+    local AUTH_KEYS_FILE="${AUTHORIZED_KEYS_BASE}/${method}_authorized_keys"
+    sed -i "/${RM_KEY}/d" ${AUTH_KEYS_FILE}
+  fi
+done
+
