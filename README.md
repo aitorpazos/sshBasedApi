@@ -14,3 +14,8 @@ This project is meant to be used by using it's docker image and adding a user pe
 API method, which will have the implementation script or binary as shell for that
 user. Take a look at the examples for a better understanding.
 
+## docker images
+You can create images for x86 and RaspberryPi going into `docker` folder and run
+`make`command (you need to have `cpp`command installed as it's used for `Dockerfile`
+pre-processing.
+

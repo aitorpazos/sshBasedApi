@@ -1,0 +1,3 @@
+#!/bin/bash
+
+useradd -m -r -g 666 -s /opt/sshAsApi/$1

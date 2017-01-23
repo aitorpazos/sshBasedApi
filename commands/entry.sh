@@ -10,4 +10,4 @@ case "${SSH_ORIGINAL_COMMAND}" in
         ${COMMANDS_BASE}/help
         ;;
 esac
-exit
+exit 0

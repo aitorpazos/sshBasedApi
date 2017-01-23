@@ -26,7 +26,7 @@ IFS=',' read -r -a APPLY_METHODS <<< "${AUTH_CONFIG}"
 function updateSshdConfig(){
   METHOD=$1
 
-  if [ "root" == $(echo "${METHOD}" | xargs) ]; then
+  if [ "root" == $(echo "${METHOD}" | xargs) ] || [ "sftp" == $(echo "${METHOD}" | xargs) ]; then
     return
   fi
 
@@ -70,7 +70,7 @@ fi
 for method in ${ALL_METHODS}; do
   # Trimming
   method=$(echo "${method}" | xargs)
-  if [ $(echo ${method} | tr '[:lower:]') != "root" ] && [ [ ${method} == "ALL" ] || [ ${APPLY_METHODS[${method}]} ] ]; then
+  if [ $(echo ${method} | tr '[:lower:]') != "root" ] && [ $(echo ${method} | tr '[:lower:]') != "sftp" ]  && [ [ ${method} == "ALL" ] || [ ${APPLY_METHODS[${method}]} ] ]; then
     updateSshdConfig ${method}
   fi
 done

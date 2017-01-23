@@ -1,0 +1,5 @@
+FROM debian:jessie
+
+#include "maintainer.docker"
+#include "Dockerfile-common.docker"
+#include "footer.docker"
