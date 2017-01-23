@@ -1,5 +1,5 @@
 FROM resin/rpi-raspbian:jessie
 
 #include "maintainer.docker"
-#include "Dockerfile-common.docker"
+#include "common.docker"
 #include "footer.docker"
