@@ -29,7 +29,7 @@ PermitRootLogin yes
 StrictModes yes
 
 RSAAuthentication no
-PubkeyAuthentication no
+PubkeyAuthentication yes
 AuthorizedKeysFile	/etc/ssh/keys/%u_authorized_keys
 
 # Don't read the user's ~/.rhosts and ~/.shosts files
@@ -42,14 +42,14 @@ HostbasedAuthentication yes
 IgnoreUserKnownHosts yes
 
 # To enable empty passwords, change to yes (NOT RECOMMENDED)
-PermitEmptyPasswords no
+PermitEmptyPasswords yes
 
 # Change to yes to enable challenge-response passwords (beware issues with
 # some PAM modules and threads)
 ChallengeResponseAuthentication no
 
 # Change to no to disable tunnelled clear text passwords
-PasswordAuthentication no
+PasswordAuthentication yes
 
 # Kerberos options
 #KerberosAuthentication no
@@ -85,13 +85,14 @@ AcceptEnv LANG LC_*
 # and ChallengeResponseAuthentication to 'no'.
 #UsePAM yes
 
+# Enable SFTP subsystem
+Subsystem sftp internal-sftp -l INFO
+
 Match User root
-  PasswordAuthentication yes
+  PasswordAuthentication no
   PubkeyAuthentication yes
   AuthorizedKeysFile "/root/.ssh/authorized_keys"
   ForceCommand /root/commands/entry.sh
-  # Enabled only to make troubleshooting easier, but might be a good idea to disable it
-  Subsystem sftp /usr/lib/openssh/sftp-server
 
 Match User sftp
   PasswordAuthentication no

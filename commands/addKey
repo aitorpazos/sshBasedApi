@@ -5,9 +5,9 @@ APPLY_TO=""
 NEW_KEY=""
 
 if [ $# -ne 2 ]; then
-  echo "Usage: addKey <applyTo> <newKey>"
-  echo "  - <applyTo>  Methods to change. Possible values: 'ALL', method name"
-  echo "  - <newKey>   New key to set"
+  echo "Usage: addKey <applyTo> <authorizedKeyLine>"
+  echo "  - <applyTo>            Methods to change. Possible values: 'ALL', method name"
+  echo "  - <authorizedKeyLine>  Line to be added to authorized_keys file"
   exit 1
 fi;
 
@@ -15,18 +15,27 @@ APPLY_TO=$1
 shift;
 
 NEW_KEY=$1
+NEW_KEY="$(echo ${NEW_KEY} | base64 -d -)"
 
 ALL_METHODS=$(cat /etc/passwd | egrep '[0-9]:666:' | awk -F':' '{ print $1}')
 
 # Spliting auth config to support several methods specification
-IFS=',' read -r -a APPLY_METHODS <<< "${AUTH_CONFIG}"
+IFS=',' read -r -a APPLY_METHODS <<< "${APPLY_TO}"
 
-for method in ${ALL_METHODS}; do
+# Check if ALL methods have been selected
+if [ "$(echo ${APPLY_METHODS} | xargs)" == "ALL" ]; then
+    APPLY_METHODS=${ALL_METHODS};
+fi;
+
+for method in ${APPLY_METHODS}; do
   # Trimming
+  typeset -l methodLower
   method=$(echo "${method}" | xargs)
-  if [ $(echo ${method} | tr '[:lower:]') != "root" ] && [ [ ${method} == "ALL" ] || [ ${APPLY_METHODS[${method}]} ] ]; then
-    local AUTH_KEYS_FILE="${AUTHORIZED_KEYS_BASE}/${method}_authorized_keys"
-    grep "${NEW_KEY}" ${AUTH_KEYS_FILE} && echo "${NEW_KEY}" >> ${AUTH_KEYS_FILE}
+  methodLower=$method
+  if [ "${methodLower}" != "root" ] && [ ${ALL_METHODS[${method}]} ]; then
+    AUTH_KEYS_FILE="${AUTHORIZED_KEYS_BASE}/${method}_authorized_keys"
+    touch ${AUTH_KEYS_FILE}
+    grep "${NEW_KEY}" ${AUTH_KEYS_FILE} 2>&1 >/dev/null || echo "${NEW_KEY}" >> ${AUTH_KEYS_FILE}
   fi
 done
 

@@ -7,7 +7,7 @@ RM_KEY=""
 if [ $# -ne 2 ]; then
   echo "Usage: rmKey <applyTo> <rmKey>"
   echo "  - <applyTo>  Methods to change. Possible values: 'ALL', method name"
-  echo "  - <rmKey>   Key to remove"
+  echo "  - <rmKey>   Key number to remove (you can use number ranges as well using commas. E.g: 3,6)"
   exit 1
 fi;
 
@@ -19,14 +19,24 @@ RM_KEY=$1
 ALL_METHODS=$(cat /etc/passwd | egrep '[0-9]:666:' | awk -F':' '{ print $1}')
 
 # Spliting auth config to support several methods specification
-IFS=',' read -r -a APPLY_METHODS <<< "${AUTH_CONFIG}"
+IFS=',' read -r -a APPLY_METHODS <<< "${APPLY_TO}"
+
+# Check if ALL methods have been selected
+if [ "$(echo ${APPLY_METHODS} | xargs)" == "ALL" ]; then
+    APPLY_METHODS=${ALL_METHODS};
+fi;
 
 for method in ${ALL_METHODS}; do
   # Trimming
+  typeset -l methodLower
   method=$(echo "${method}" | xargs)
-  if [ $(echo ${method} | tr '[:lower:]') != "root" ] && [ [ ${method} == "ALL" ] || [ ${APPLY_METHODS[${method}]} ] ]; then
-    local AUTH_KEYS_FILE="${AUTHORIZED_KEYS_BASE}/${method}_authorized_keys"
-    sed -i "/${RM_KEY}/d" ${AUTH_KEYS_FILE}
+  methodLower=$method
+  if [ "${methodLower}" != "root" ] && [ ${ALL_METHODS[${method}]} ]; then
+    echo "Removing key(s) from $method"
+    AUTH_KEYS_FILE="${AUTHORIZED_KEYS_BASE}/${method}_authorized_keys"
+    if [ -f ${AUTH_KEYS_FILE} ]; then
+        sed -ie "${RM_KEY}d" ${AUTH_KEYS_FILE}
+    fi
   fi
 done
 

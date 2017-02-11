@@ -1,10 +1,11 @@
 #!/bin/bash
 
+AUTHORIZED_KEYS_BASE="/etc/ssh/keys/"
 APPLY_TO=""
 
 if [ $# -ne 1 ]; then
-  echo "Usage: changePassword <applyTo>"
-  echo "  - <applyTo>     Methods to change. Possible values: 'ALL', method name"
+  echo "Usage: lsKey <method>"
+  echo "  - <method>  Methods which keys to list. Possible values: 'ALL', method name"
   exit 1
 fi;
 
@@ -21,14 +22,19 @@ if [ "$(echo ${APPLY_METHODS} | xargs)" == "ALL" ]; then
     APPLY_METHODS=${ALL_METHODS};
 fi;
 
-for method in ${APPLY_METHODS}; do
+for method in ${ALL_METHODS}; do
   # Trimming
   typeset -l methodLower
   method=$(echo "${method}" | xargs)
   methodLower=$method
   if [ "${methodLower}" != "root" ] && [ ${ALL_METHODS[${method}]} ]; then
-    echo "Please enter the new password for ${method}:"
-    passwd ${method}
+    echo "Keys registered for method $method"
+    AUTH_KEYS_FILE="${AUTHORIZED_KEYS_BASE}/${method}_authorized_keys"
+    if [ -f ${AUTH_KEYS_FILE} ]; then
+        grep -n "" ${AUTH_KEYS_FILE}
+    else
+        echo "No keys defined"
+    fi
   fi
 done
 

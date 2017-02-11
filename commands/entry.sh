@@ -1,8 +1,8 @@
 #!/bin/bash
 
-COMMANDS_BASE="/root/commands/"
+COMMANDS_BASE="bash /root/commands/"
 case "${SSH_ORIGINAL_COMMAND}" in
-    help|shell|authConfig\ *|changePassword\ *|addKey\ *|rmKey\ *)
+    help|shell|authConfig\ *|changePassword\ *|lsKey\ *|addKey\ *|rmKey\ *)
         ${COMMANDS_BASE}/${SSH_ORIGINAL_COMMAND}
         ;;
     *)

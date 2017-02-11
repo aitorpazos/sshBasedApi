@@ -1,17 +1,24 @@
 RUN apt-get update && apt-get install -y --force-yes \\
-    openssh-server && \\
+    openssh-server vim-nox && \\
     mkdir --mode 700 /var/run/sshd && \\
     echo "sftp:x:0:0:root:/root:/bin/bash" >> /etc/passwd
 
 COPY sshd_config /etc/ssh/sshd_config
 COPY sshWrapper.sh /root/
 COPY commands /root/commands/
+COPY addApiMethod /usr/local/bin/
 
 RUN chmod 644 /etc/ssh/sshd_config && \\
     chmod 550 -R /root/commands && \\
     chmod 550 /root/sshWrapper.sh && \\
+    chmod 550 /usr/local/bin/addApiMethod && \\
     rm -f /etc/ssh/\*_key* && \\
     ssh-keygen -A && \\
     mkdir /etc/ssh/keys && \\
     groupadd -g 666 -r sshapi;
+
+ONBUILD COPY id_rsa.pub /root/.ssh/authorized_keys
+ONBUILD RUN chmod 700 /root/.ssh && \\
+            chmod 600 /root/.ssh/authorized_keys
+
 

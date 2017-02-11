@@ -1,3 +1,10 @@
 #!/bin/bash
 
-useradd -m -r -g 666 -s /opt/sshAsApi/$1
+METHOD_NAME=$1
+METHOD_PATH=/opt/sshAsApi/${METHOD_NAME}
+adduser --system --home /home/${METHOD_NAME} --gid 666 --shell ${METHOD_PATH} --disabled-password ${METHOD_NAME}
+chown ${METHOD_NAME} ${METHOD_PATH}
+chmod 500 ${METHOD_PATH}
+# Setting public key authentication as default
+/root/commands/authConfig ${METHOD_NAME} PUBLIC_KEY
+
